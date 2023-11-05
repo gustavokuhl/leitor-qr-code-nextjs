@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -16,30 +15,28 @@ import { ToastAction } from "@/components/ui/toast"
 export default function QrReader() {
   const [cameraAberta, setCameraAberta] = useState<boolean>(false)
   const [urlNota, setUrlNota] = useState<string>("")
-  const [isValido, setIsValido] = useState<boolean>()
   const { toast } = useToast()
 
   const handleRead = (code: QRCode) => {
     const isUrlValida = String(code.data).startsWith(
       "https://sat.sef.sc.gov.br/nfce/consulta?p="
     )
-    setIsValido(isUrlValida)
     setCameraAberta(false)
-    if (isUrlValida) setUrlNota(code.data)
-    else
-      toast({
-        title: "QR Code inválido",
-        description: "Verifique e tente novamente",
-        variant: "destructive",
-        action: (
-          <ToastAction
-            altText="Tentar novamente"
-            onClick={() => setCameraAberta(true)}
-          >
-            Tentar novamente
-          </ToastAction>
-        ),
-      })
+    isUrlValida
+      ? setUrlNota(code.data)
+      : toast({
+          title: "QR Code inválido",
+          description: "Verifique e tente novamente",
+          variant: "destructive",
+          action: (
+            <ToastAction
+              altText="Tentar novamente"
+              onClick={() => setCameraAberta(true)}
+            >
+              Tentar novamente
+            </ToastAction>
+          ),
+        })
   }
 
   return (
@@ -64,24 +61,20 @@ export default function QrReader() {
             </Button>
           </>
         ) : (
-          <Button onClick={() => setCameraAberta(true)}>Abrir câmera</Button>
+          <>
+            <Button onClick={() => setCameraAberta(true)}>Abrir câmera</Button>
+            {urlNota && (
+              <a
+                href={urlNota}
+                target="_blank"
+                className={buttonVariants({ variant: "secondary" })}
+              >
+                Acessar nota
+              </a>
+            )}
+          </>
         )}
       </CardContent>
-      {urlNota && !cameraAberta && (
-        <CardFooter>
-          {isValido ? (
-            <a
-              href={urlNota}
-              target="_blank"
-              className={buttonVariants({ variant: "secondary" })}
-            >
-              Acessar nota
-            </a>
-          ) : (
-            <p className="text-red-600">Nota inválida</p>
-          )}
-        </CardFooter>
-      )}
     </Card>
   )
 }
