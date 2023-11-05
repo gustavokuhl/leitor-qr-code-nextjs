@@ -12,9 +12,13 @@ import QrCodeReader, { QRCode } from "react-qrcode-reader"
 import { useToast } from "@/components/ui/use-toast"
 import { ToastAction } from "@/components/ui/toast"
 
-export default function QrReader() {
+interface LeitorQrCodeProps {
+  urlNota: string
+  onDecode: (url: string) => void
+}
+
+export default function QrReader({ urlNota, onDecode }: LeitorQrCodeProps) {
   const [cameraAberta, setCameraAberta] = useState<boolean>(false)
-  const [urlNota, setUrlNota] = useState<string>("")
   const { toast } = useToast()
 
   const handleRead = (code: QRCode) => {
@@ -23,7 +27,7 @@ export default function QrReader() {
     )
     setCameraAberta(false)
     isUrlValida
-      ? setUrlNota(code.data)
+      ? onDecode(code.data)
       : toast({
           title: "QR Code inválido",
           description: "Verifique e tente novamente",
